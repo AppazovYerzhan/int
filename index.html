@@ -3,78 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>9 Button Requests</title>
+    <title>Configurable Requests</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
             margin-top: 50px;
         }
-        button {
+        button, input {
             margin: 10px;
             padding: 15px 30px;
             font-size: 16px;
-            cursor: pointer;
         }
     </style>
     <script>
+        var processId;
+        var transactionId;
+        var accessToken;
+        var refreshToken;
+
         function sendRequest(buttonId) {
             var command;
-            var processId;
-            var transactionId;
-            var accessToken;
-            var refreshToken;
+            var ip = document.getElementById("ip").value;
+            var port = document.getElementById("port").value;
+
+            if (!ip || !port) {
+                alert("Please provide valid IP and port.");
+                return;
+            }
 
             switch (buttonId) {
-            case 1:
-                command = `register?name=Yerzh`;
-                break;
-            case 2:
-                command = `payment?amount=1`;
-                break;
-            case 3:
-                command = `status?processId=${processId}`;
-                break;
-            case 4:
-                command = `refund?method=card&amount-1&transactionId=${transactionId}`;
-                break;
-            case 5:
-                command = `revoke?name=Yerzh&refreshToken=${refreshToken}`;
-                break;
-                
-            default:
-                result = "Unknown";
-}
-            const url = `https://192.168.1.77:8081/v2/${command}`;
-            const headers = new Headers({'accesstoken': 'someToken'});
-            fetch(`https://192.168.1.77:8081/v2/preflight`, { method: 'OPTIONS' })
-    .then(() => {
-            fetch(url, {method: 'GET', headers: headers, redirect: 'follow'})
-                .then(response => response.text())
+                case 1:
+                    command = `register?name=Yerzh`;
+                    break;
+                case 2:
+                    command = `payment?amount=1`;
+                    break;
+                case 3:
+                    command = `status?processId=${processId}`;
+                    break;
+                case 4:
+                    command = `refund?method=card&amount=1&transactionId=${transactionId}`;
+                    break;
+                case 5:
+                    command = `revoke?name=Yerzh&refreshToken=${refreshToken}`;
+                    break;
+                default:
+                    alert("Unknown command");
+                    return;
+            }
+
+            const url = `https://${ip}:${port}/v2/${command}`;
+            let headers = new Headers();
+            
+            headers.append('accesstoken', accessToken || 'someToken');
+
+            fetch(url, { method: 'GET', headers: headers, redirect: 'follow' })
+                .then(response => response.json())
                 .then(data => {
-                    alert(`Response from server for Button ${buttonId}: ${data}`);
-                    processId = data.data.processId
-                    transactionId = data.data.transactionId
+                    alert(`Response from server for Button ${buttonId}: ${JSON.stringify(data)}`);
+                    console.log(JSON.stringify(data))
+                    if (data.data.accessToken) accessToken = data.accessToken;
+                    if (data.data.refreshToken) refreshToken = data.refreshToken;
+                    if (data.data.processId) processId = data.processId;
+                    if (data.data.transactionId) transactionId = data.transactionId;
+                    
                 })
                 .catch(error => {
                     alert(`Error for Button ${buttonId}: ${error}`);
                 });
-        })
-    }
+        }
     </script>
 </head>
 <body>
-    <h1>Click the Buttons to Send Requests</h1>
-
+    <h1>Configurable Requests</h1>
+    
+    <div>
+        <label>IP Address:</label>
+        <input type="text" id="ip" value="192.168.1.77" placeholder="Enter IP Address">
+        <label>Port:</label>
+        <input type="text" id="port" value="8081" placeholder="Enter Port">
+    </div>
+    
     <button onclick="sendRequest(1)">REGISTER</button>
     <button onclick="sendRequest(2)">PAYMENT</button>
     <button onclick="sendRequest(3)">STATUS</button>
     <button onclick="sendRequest(4)">REFUND</button>
-    <button onclick="sendRequest(5)">Button 5</button>
-    <button onclick="sendRequest(6)">Button 6</button>
-    <button onclick="sendRequest(7)">Button 7</button>
-    <button onclick="sendRequest(8)">Button 8</button>
-    <button onclick="sendRequest(9)">Button 9</button>
+    <button onclick="sendRequest(5)">REVOKE</button>
 
 </body>
 </html>
