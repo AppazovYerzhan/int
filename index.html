@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>9 Button Requests</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        button {
+            margin: 10px;
+            padding: 15px 30px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+    <script>
+        function sendRequest(buttonId) {
+            var command;
+            var processId;
+            var transactionId;
+            var accessToken;
+            var refreshToken;
+
+            switch (buttonId) {
+            case 1:
+                command = `register?name=Yerzh`;
+                break;
+            case 2:
+                command = `payment?amount=1`;
+                break;
+            case 3:
+                command = `status?processId=${processId}`;
+                break;
+            case 4:
+                command = `refund?method=card&amount-1&transactionId=${transactionId}`;
+                break;
+            case 5:
+                command = `revoke?name=Yerzh&refreshToken=${refreshToken}`;
+                break;
+                
+            default:
+                result = "Unknown";
+}
+            const url = `https://192.168.1.77:8081/v2/${command}`;
+            const headers = new Headers({'accesstoken': 'someToken'});
+            fetch(`https://192.168.1.77:8081/v2/preflight`, { method: 'OPTIONS' })
+    .then(() => {
+            fetch(url, {method: 'GET', headers: headers, redirect: 'follow'})
+                .then(response => response.text())
+                .then(data => {
+                    alert(`Response from server for Button ${buttonId}: ${data}`);
+                    processId = data.data.processId
+                    transactionId = data.data.transactionId
+                })
+                .catch(error => {
+                    alert(`Error for Button ${buttonId}: ${error}`);
+                });
+        })
+    }
+    </script>
+</head>
+<body>
+    <h1>Click the Buttons to Send Requests</h1>
+
+    <button onclick="sendRequest(1)">REGISTER</button>
+    <button onclick="sendRequest(2)">PAYMENT</button>
+    <button onclick="sendRequest(3)">STATUS</button>
+    <button onclick="sendRequest(4)">REFUND</button>
+    <button onclick="sendRequest(5)">Button 5</button>
+    <button onclick="sendRequest(6)">Button 6</button>
+    <button onclick="sendRequest(7)">Button 7</button>
+    <button onclick="sendRequest(8)">Button 8</button>
+    <button onclick="sendRequest(9)">Button 9</button>
+
+</body>
+</html>
