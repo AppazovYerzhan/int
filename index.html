@@ -63,10 +63,10 @@
                 .then(data => {
                     alert(`Response from server for Button ${buttonId}: ${JSON.stringify(data)}`);
                     console.log(JSON.stringify(data))
-                    if (data.data.accessToken) accessToken = data.accessToken;
-                    if (data.data.refreshToken) refreshToken = data.refreshToken;
-                    if (data.data.processId) processId = data.processId;
-                    if (data.data.transactionId) transactionId = data.transactionId;
+                    if (data.data.accessToken) accessToken = data.data.accessToken;
+                    if (data.data.refreshToken) refreshToken = data.data.refreshToken;
+                    if (data.data.processId) processId = data.data.processId;
+                    if (data.data.transactionId) transactionId = data.data.transactionId;
                     
                 })
                 .catch(error => {
