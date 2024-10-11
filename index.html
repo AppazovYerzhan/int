@@ -30,8 +30,15 @@
 
         function logEvent(message) {
             var logArea = document.getElementById('log');
+            var maxLogs = 10;
             logArea.value += message + '\n';
+            var logLines = logArea.value.split('\n');
+            if (logLines.length > maxLogs) {
+                logLines = logLines.slice(logLines.length - maxLogs);
+            }
+            logArea.value = logLines.join('\n');
         }
+
 
         function sendRequest(buttonId) {
             var command;
