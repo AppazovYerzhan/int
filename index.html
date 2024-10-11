@@ -15,6 +15,12 @@
             padding: 15px 30px;
             font-size: 16px;
         }
+        textarea {
+            width: 80%;
+            height: 200px;
+            margin-top: 20px;
+            font-size: 14px;
+        }
     </style>
     <script>
         var processId;
@@ -22,13 +28,18 @@
         var accessToken;
         var refreshToken;
 
+        function logEvent(message) {
+            var logArea = document.getElementById('log');
+            logArea.value += message + '\n';
+        }
+
         function sendRequest(buttonId) {
             var command;
             var ip = document.getElementById("ip").value;
             var port = document.getElementById("port").value;
 
             if (!ip || !port) {
-                alert("Please provide valid IP and port.");
+                logEvent("Please provide valid IP and port.");
                 return;
             }
 
@@ -49,7 +60,7 @@
                     command = `revoke?name=Yerzh&refreshToken=${refreshToken}`;
                     break;
                 default:
-                    alert("Unknown command");
+                    logEvent("Unknown command");
                     return;
             }
 
@@ -61,16 +72,16 @@
             fetch(url, { method: 'GET', headers: headers, redirect: 'follow' })
                 .then(response => response.json())
                 .then(data => {
-                    alert(`Response from server for Button ${buttonId}: ${JSON.stringify(data)}`);
-                    console.log(JSON.stringify(data))
-                    if (data.data.accessToken) accessToken = data.data.accessToken;
-                    if (data.data.refreshToken) refreshToken = data.data.refreshToken;
-                    if (data.data.processId) processId = data.data.processId;
-                    if (data.data.transactionId) transactionId = data.data.transactionId;
-                    
+                    logEvent(`Response from server for Button ${buttonId}: ${JSON.stringify(data)}`);
+                    if (data.data) {
+                        if (data.data.accessToken) accessToken = data.data.accessToken;
+                        if (data.data.refreshToken) refreshToken = data.data.refreshToken;
+                        if (data.data.processId) processId = data.data.processId;
+                        if (data.data.transactionId) transactionId = data.data.transactionId;
+                    }
                 })
                 .catch(error => {
-                    alert(`Error for Button ${buttonId}: ${error}`);
+                    logEvent(`Error for Button ${buttonId}: ${error}`);
                 });
         }
     </script>
@@ -90,6 +101,7 @@
     <button onclick="sendRequest(3)">STATUS</button>
     <button onclick="sendRequest(4)">REFUND</button>
     <button onclick="sendRequest(5)">REVOKE</button>
-
+    
+    <textarea id="log" readonly placeholder="Logs will appear here..."></textarea>
 </body>
 </html>
