@@ -32,15 +32,19 @@
             var ip = document.getElementById("ip").value;
             var port = document.getElementById("port").value;
             var accessTokenInput = document.getElementById("accessToken").value;
+            var refreshTokenInput = document.getElementById("refreshToken").value;
 
             if (!ip || !port) {
                 logEvent("Please provide valid IP and port.");
                 return;
             }
 
-            // If the accessTokenInput field is not empty, use it as the accessToken
             if (accessTokenInput) {
                 accessToken = accessTokenInput;
+            }
+            
+            if (refreshTokenInput) {
+                refreshToken = refreshTokenInput;
             }
 
             switch (buttonId) {
@@ -74,9 +78,12 @@
                     logEvent(`Response from server for Button ${buttonId}: ${JSON.stringify(data)}`);
                     if (data.data.accessToken) {
                         accessToken = data.data.accessToken;
-                        document.getElementById("accessToken").value = accessToken; // Auto-fill the accessToken field
+                        document.getElementById("accessToken").value = accessToken;
                     }
-                    if (data.data.refreshToken) refreshToken = data.data.refreshToken;
+                    if (data.data.refreshToken) {
+                        refreshToken = data.data.refreshToken;
+                        document.getElementById("refreshToken").value = refreshToken;
+                    }
                     if (data.data.processId) processId = data.data.processId;
                     if (data.data.transactionId) transactionId = data.data.transactionId;
                 })
@@ -87,21 +94,12 @@
 
         function logEvent(message) {
             var logArea = document.getElementById('log');
-            var maxLogs = 10; // Set the maximum number of log entries
-
-            // Add the new log message
+            var maxLogs = 10;
             logArea.value += message + '\n';
-
-            // Split the logs into an array by lines
             var logLines = logArea.value.split('\n');
-
-            // Check if the log exceeds the maximum allowed entries
             if (logLines.length > maxLogs) {
-                // Remove the oldest logs
                 logLines = logLines.slice(logLines.length - maxLogs);
             }
-
-            // Update the textarea with the new, trimmed log
             logArea.value = logLines.join('\n');
         }
     </script>
@@ -116,6 +114,8 @@
         <input type="text" id="port" value="8081" placeholder="Enter Port">
         <label>Access Token:</label>
         <input type="text" id="accessToken" placeholder="Enter Access Token">
+        <label>Refresh Token:</label>
+        <input type="text" id="refreshToken" placeholder="Enter Refresh Token">
     </div>
     
     <button onclick="sendRequest(1)">REGISTER</button>
